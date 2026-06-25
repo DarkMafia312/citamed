@@ -1,0 +1,52 @@
+package com.clinica.demo.model;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name = "medicos")
+public class Medico {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull
+    @Size(min = 2, max = 100)
+    @Column(nullable = false)
+    private String nombre;
+
+    @NotNull
+    @Size(min = 2, max = 100)
+    @Column(nullable = false)
+    private String apellido;
+
+    @NotNull
+    @Column(unique = true, nullable = false)
+    private String cmp;
+
+    @Column(unique = true)
+    private String correo;
+
+    @Size(max = 15)
+    private String telefono;
+
+    private String genero;
+
+    @Size(max = 255)
+    private String descripcion;
+
+    @ManyToOne
+    @JoinColumn(name = "especialidad_id")
+    private Especialidad especialidad;
+
+    @OneToOne
+    @JoinColumn(name = "usuario_id")
+    private Usuario usuario;
+
+    @Column(nullable = false)
+    private Boolean activo = true;
+}
