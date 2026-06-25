@@ -1,0 +1,123 @@
+<div class="form-page">
+  <div class="page-header">
+    <div>
+      <h2>{{ esEdicion ? 'Editar Recepcionista' : 'Nueva Recepcionista' }}</h2>
+      <p>{{ esEdicion ? 'Actualiza la información de la recepcionista' : 'Completa los datos para registrar una nueva recepcionista' }}</p>
+    </div>
+    <button class="btn-back" (click)="cancelar()">← Volver</button>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando datos de la recepcionista...</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card" *ngIf="!cargando">
+
+    <div class="form-section">
+      <h3>Datos personales</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" formControlName="nombre" placeholder="Ej. Rosa"
+                 (input)="soloLetras($event, 'nombre')"
+                 [class.is-invalid]="campoInvalido('nombre')">
+          <div class="error-msg" *ngIf="campoInvalido('nombre')">
+            <span *ngIf="form.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+            <span *ngIf="form.get('nombre')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Apellido *</label>
+          <input type="text" formControlName="apellido" placeholder="Ej. Perez"
+                 (input)="soloLetras($event, 'apellido')"
+                 [class.is-invalid]="campoInvalido('apellido')">
+          <div class="error-msg" *ngIf="campoInvalido('apellido')">
+            <span *ngIf="form.get('apellido')?.errors?.['required']">El apellido es obligatorio</span>
+            <span *ngIf="form.get('apellido')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>DNI</label>
+          <input type="text" formControlName="dni" placeholder="8 dígitos" maxlength="8"
+                 inputmode="numeric"
+                 (input)="soloNumeros($event, 'dni', 8)"
+                 [class.is-invalid]="campoInvalido('dni')">
+          <div class="error-msg" *ngIf="campoInvalido('dni')">
+            <span>El DNI debe tener exactamente 8 dígitos</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Contacto</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" formControlName="telefono" placeholder="9 dígitos" maxlength="9"
+                 inputmode="numeric"
+                 (input)="soloNumeros($event, 'telefono', 9)"
+                 [class.is-invalid]="campoInvalido('telefono')">
+          <div class="error-msg" *ngIf="campoInvalido('telefono')">
+            <span>El teléfono debe tener exactamente 9 dígitos</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Correo</label>
+          <input type="text" formControlName="correo" placeholder="ejemplo@gmail.com"
+                 [class.is-invalid]="campoInvalido('correo')">
+          <div class="error-msg" *ngIf="campoInvalido('correo')">
+            <span>Solo se permiten correos @gmail.com</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Acceso al sistema</h3>
+      <p class="section-hint" *ngIf="esEdicion">
+        Deja la contraseña en blanco si no deseas cambiarla.
+      </p>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Usuario (username) *</label>
+          <input type="text" formControlName="username" placeholder="Ej. recep01"
+                 (input)="usernameInput($event)"
+                 [class.is-invalid]="campoInvalido('username')">
+          <div class="error-msg" *ngIf="campoInvalido('username')">
+            <span *ngIf="form.get('username')?.errors?.['required']">El username es obligatorio</span>
+            <span *ngIf="form.get('username')?.errors?.['minlength']">Mínimo 3 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>{{ esEdicion ? 'Nueva contraseña' : 'Contraseña *' }}</label>
+          <div class="input-wrapper">
+            <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="password"
+                   placeholder="Mínimo 6 caracteres"
+                   [class.is-invalid]="campoInvalido('password')">
+            <button type="button" class="toggle-password" (click)="mostrarPassword = !mostrarPassword" tabindex="-1">
+              {{ mostrarPassword ? '🙈' : '👁️' }}
+            </button>
+          </div>
+          <div class="error-msg" *ngIf="campoInvalido('password')">
+            <span *ngIf="form.get('password')?.errors?.['required']">La contraseña es obligatoria</span>
+            <span *ngIf="form.get('password')?.errors?.['minlength']">Mínimo 6 caracteres</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-save" [disabled]="guardando">
+        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar cambios' : 'Registrar recepcionista' }}</span>
+        <span *ngIf="guardando" class="spinner-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>

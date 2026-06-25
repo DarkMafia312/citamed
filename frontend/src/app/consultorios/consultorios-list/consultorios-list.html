@@ -1,0 +1,73 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Gestión de Consultorios</h2>
+      <p>Administra los consultorios disponibles en la clínica</p>
+    </div>
+    <a routerLink="/dashboard/consultorios/nuevo" class="btn-primary">
+      <span>+</span> Nuevo Consultorio
+    </a>
+  </div>
+
+  <div class="search-input-wrapper">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      [(ngModel)]="busqueda"
+      placeholder="Buscar por código, nombre o tipo...">
+    <button class="btn-clear-inline" (click)="limpiarBusqueda()" *ngIf="busqueda">✕</button>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Piso</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let c of consultoriosFiltrados">
+        <td data-label="Código"><strong>{{ c.codigo }}</strong></td>
+        <td data-label="Nombre">{{ c.nombre }}</td>
+        <td data-label="Tipo">{{ c.tipo || '-' }}</td>
+        <td data-label="Piso">{{ c.piso || '-' }}</td>
+        <td data-label="Estado">
+            <span class="badge" [class.badge-success]="c.disponible" [class.badge-danger]="!c.disponible">
+              {{ c.disponible ? 'Disponible' : 'No disponible' }}
+            </span>
+        </td>
+        <td data-label="Acciones">
+          <div class="actions">
+            <a *ngIf="c.disponible" [routerLink]="['/dashboard/consultorios/editar', c.id]" class="btn-icon btn-edit" title="Editar">
+              ✏️
+            </a>
+            <span *ngIf="!c.disponible" class="btn-icon btn-disabled" title="Habilita para poder editar">
+                ✏️
+              </span>
+            <button class="btn-icon" [class.btn-warning]="c.disponible" [class.btn-success]="!c.disponible"
+                    (click)="toggleDisponible(c)" [title]="c.disponible ? 'Deshabilitar' : 'Habilitar'">
+              {{ c.disponible ? '🔒' : '🔓' }}
+            </button>
+            <button class="btn-icon btn-danger" (click)="eliminar(c)" title="Eliminar">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="consultoriosFiltrados.length === 0">
+        <td colspan="6" class="no-data">No se encontraron consultorios</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando consultorios...</p>
+  </div>
+</div>

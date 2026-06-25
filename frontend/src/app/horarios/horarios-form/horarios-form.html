@@ -1,0 +1,105 @@
+<div class="form-page">
+  <div class="page-header">
+    <div>
+      <h2>{{ esEdicion ? 'Editar Horario' : 'Nuevo Horario' }}</h2>
+      <p *ngIf="!esEdicion">Selecciona los días en que el médico atenderá con el mismo rango de horas</p>
+      <p *ngIf="esEdicion">Actualiza el horario médico</p>
+    </div>
+    <button class="btn-back" (click)="cancelar()">← Volver</button>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando datos del horario...</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card" *ngIf="!cargando">
+
+    <div class="form-section">
+      <h3>Datos del horario</h3>
+      <div class="form-grid">
+
+        <div class="form-group" *ngIf="rol !== 'MEDICO'">
+          <label>Médico *</label>
+          <select formControlName="medicoId" [class.is-invalid]="campoInvalido('medicoId')">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let m of medicos" [value]="m.id">{{ m.nombre }} {{ m.apellido }}</option>
+          </select>
+          <div class="error-msg" *ngIf="campoInvalido('medicoId')">
+            <span>El médico es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="rol === 'MEDICO'">
+          <label>Médico</label>
+          <input type="text" [value]="miMedicoNombre" disabled>
+        </div>
+
+        <!-- Edición: un solo día -->
+        <div class="form-group" *ngIf="esEdicion">
+          <label>Día de la semana *</label>
+          <select formControlName="diaSemana" [class.is-invalid]="campoInvalido('diaSemana')">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let d of dias" [value]="d">{{ d }}</option>
+          </select>
+          <div class="error-msg" *ngIf="campoInvalido('diaSemana')">
+            <span>El día es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Hora de inicio *</label>
+          <input type="time" formControlName="horaInicio"
+                 [class.is-invalid]="campoInvalido('horaInicio') || horarioInvalido">
+          <div class="error-msg" *ngIf="campoInvalido('horaInicio')">
+            <span>La hora de inicio es obligatoria</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Hora de fin *</label>
+          <input type="time" formControlName="horaFin"
+                 [class.is-invalid]="campoInvalido('horaFin') || horarioInvalido">
+          <div class="error-msg" *ngIf="campoInvalido('horaFin')">
+            <span>La hora de fin es obligatoria</span>
+          </div>
+        </div>
+
+        <div class="form-group form-group-full" *ngIf="horarioInvalido">
+          <div class="error-msg">
+            <span>La hora de inicio debe ser menor que la hora de fin</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Creación: selección múltiple de días -->
+    <div class="form-section" *ngIf="!esEdicion">
+      <h3>Días de atención *</h3>
+      <p class="section-hint">Selecciona los días en que el médico trabajará este horario (puedes elegir varios, ej. 3 días)</p>
+
+      <div class="days-grid">
+        <button
+          type="button"
+          *ngFor="let dia of dias"
+          class="day-chip"
+          [class.selected]="diaSeleccionado(dia)"
+          (click)="toggleDia(dia)">
+          {{ dia }}
+        </button>
+      </div>
+
+      <div class="error-msg" *ngIf="diasInvalido">
+        <span>Selecciona al menos un día</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-save" [disabled]="guardando">
+        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar cambios' : 'Registrar horario' }}</span>
+        <span *ngIf="guardando" class="spinner-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>

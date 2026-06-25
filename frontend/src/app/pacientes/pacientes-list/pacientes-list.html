@@ -1,0 +1,83 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Gestión de Pacientes</h2>
+      <p>Administra el registro de pacientes de la clínica</p>
+    </div>
+    <a routerLink="/dashboard/pacientes/nuevo" class="btn-primary" *ngIf="puedeGestionar()">
+      <span>+</span> Nuevo Paciente
+    </a>
+  </div>
+
+  <div class="search-input-wrapper">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      [(ngModel)]="busqueda"
+      (ngModelChange)="onBusquedaChange()"
+      placeholder="Buscar por nombre, apellido o DNI...">
+    <button class="btn-clear-inline" (click)="limpiarBusqueda()" *ngIf="busqueda">✕</button>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Paciente</th>
+        <th>DNI</th>
+        <th>Edad</th>
+        <th>Género</th>
+        <th>Teléfono</th>
+        <th>Seguro</th>
+        <th>Estado</th>
+        <th *ngIf="puedeGestionar()">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let p of pacientes">
+        <td data-label="Paciente">
+          <div class="paciente-info">
+            <strong>{{ p.nombre }} {{ p.apellido }}</strong>
+            <small>{{ p.correo || 'Sin correo' }}</small>
+          </div>
+        </td>
+        <td data-label="DNI">{{ p.dni }}</td>
+        <td data-label="Edad">{{ calcularEdad(p.fechaNacimiento) }} años</td>
+        <td data-label="Género">{{ p.genero }}</td>
+        <td data-label="Teléfono">{{ p.telefono || '-' }}</td>
+        <td data-label="Seguro">{{ p.seguroMedico || '-' }}</td>
+        <td data-label="Estado">
+            <span class="badge" [class.badge-success]="p.activo" [class.badge-danger]="!p.activo">
+              {{ p.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td data-label="Acciones" *ngIf="puedeGestionar()">
+          <div class="actions">
+            <a *ngIf="p.activo" [routerLink]="['/dashboard/pacientes/editar', p.id]" class="btn-icon btn-edit" title="Editar">
+              ✏️
+            </a>
+            <span *ngIf="!p.activo" class="btn-icon btn-disabled" title="Habilita al paciente para poder editarlo">
+                ✏️
+              </span>
+            <button class="btn-icon" [class.btn-warning]="p.activo" [class.btn-success]="!p.activo"
+                    (click)="toggleActivo(p)" [title]="p.activo ? 'Deshabilitar' : 'Habilitar'">
+              {{ p.activo ? '🔒' : '🔓' }}
+            </button>
+            <button class="btn-icon btn-danger" (click)="eliminar(p)" title="Eliminar">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="pacientes.length === 0">
+        <td [attr.colspan]="puedeGestionar() ? 8 : 7" class="no-data">No se encontraron pacientes</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando pacientes...</p>
+  </div>
+</div>

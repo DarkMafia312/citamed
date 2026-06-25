@@ -1,0 +1,29 @@
+<header class="navbar">
+  <div class="navbar-left">
+    <button class="hamburger" (click)="toggleMobileMenu.emit()">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <h1 class="page-title">Dashboard</h1>
+  </div>
+
+  <div class="navbar-right">
+    <div class="user-menu" (click)="toggleMenu()">
+      <div class="user-info">
+        <span class="user-name">{{ username }}</span>
+        <span class="user-rol">{{ rol }}</span>
+      </div>
+      <div class="avatar">{{ getIniciales() }}</div>
+
+      <div class="dropdown" *ngIf="menuAbierto">
+        <button class="dropdown-item logout" (click)="cerrarSesion()">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

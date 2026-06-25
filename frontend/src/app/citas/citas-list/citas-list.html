@@ -1,0 +1,119 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Gestión de Citas</h2>
+      <p>Administra las citas médicas programadas</p>
+    </div>
+    <a routerLink="/dashboard/citas/nuevo" class="btn-primary" *ngIf="puedeCrear()">
+      <span>+</span> Nueva Cita
+    </a>
+  </div>
+
+  <div class="filters-card">
+    <div class="search-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        placeholder="Buscar por paciente, médico o DNI...">
+      <button class="btn-clear-inline" (click)="limpiarFiltros()" *ngIf="busqueda">✕</button>
+    </div>
+
+    <div class="role-chips">
+      <button
+        class="role-chip"
+        [class.active]="filtroEstado === 'TODOS'"
+        (click)="filtroEstado = 'TODOS'">
+        Todos
+        <span class="chip-count">{{ contarPorEstado('TODOS') }}</span>
+      </button>
+      <button
+        *ngFor="let e of estados"
+        class="role-chip"
+        [class.active]="filtroEstado === e"
+        [class.chip-programada]="e === 'PROGRAMADA' && filtroEstado === e"
+        [class.chip-confirmada]="e === 'CONFIRMADA' && filtroEstado === e"
+        [class.chip-atendida]="e === 'ATENDIDA' && filtroEstado === e"
+        [class.chip-cancelada]="e === 'CANCELADA' && filtroEstado === e"
+        (click)="filtroEstado = e">
+        {{ e }}
+        <span class="chip-count">{{ contarPorEstado(e) }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Paciente</th>
+        <th>Médico</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Motivo</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let c of citasFiltradas">
+        <td data-label="Paciente">
+          <div class="paciente-info">
+            <strong>{{ c.pacienteNombre }}</strong>
+            <small>DNI: {{ c.pacienteDni }}</small>
+          </div>
+        </td>
+        <td data-label="Médico">
+          <div class="paciente-info">
+            <strong>{{ c.medicoNombre }}</strong>
+            <small>{{ c.medicoEspecialidad || '-' }}</small>
+          </div>
+        </td>
+        <td data-label="Fecha">{{ c.fecha }}</td>
+        <td data-label="Hora">{{ formatearHora(c.hora) }}</td>
+        <td data-label="Motivo">{{ c.motivo || '-' }}</td>
+        <td data-label="Estado">
+            <span class="badge"
+                  [class.badge-success]="c.estado === 'CONFIRMADA'"
+                  [class.badge-info]="c.estado === 'PROGRAMADA'"
+                  [class.badge-done]="c.estado === 'ATENDIDA'"
+                  [class.badge-danger]="c.estado === 'CANCELADA'">
+              {{ c.estado }}
+            </span>
+          <div class="motivo-cancelacion" *ngIf="c.estado === 'CANCELADA' && c.motivoCancelacion">
+            <small>{{ c.motivoCancelacion }}</small>
+          </div>
+        </td>
+        <td data-label="Acciones">
+          <div class="actions" *ngIf="tieneAcciones(c)">
+            <a *ngIf="puedeEditar(c)" [routerLink]="['/dashboard/citas/editar', c.id]" class="btn-icon btn-edit" title="Editar">
+              ✏️
+            </a>
+            <button *ngIf="puedeConfirmar(c)" class="btn-icon btn-success" (click)="confirmar(c)" title="Confirmar cita">
+              ✅
+            </button>
+            <button *ngIf="puedeAtender(c)" class="btn-icon btn-info" (click)="atender(c)" title="Marcar como atendida">
+              🩺
+            </button>
+            <button *ngIf="puedeCancelar(c)" class="btn-icon btn-warning" (click)="cancelar(c)" title="Cancelar cita">
+              🚫
+            </button>
+            <button *ngIf="puedeEliminar()" class="btn-icon btn-danger" (click)="eliminar(c)" title="Eliminar">
+              🗑️
+            </button>
+          </div>
+          <span *ngIf="!tieneAcciones(c)" class="no-actions">—</span>
+        </td>
+      </tr>
+      <tr *ngIf="citasFiltradas.length === 0">
+        <td colspan="7" class="no-data">No se encontraron citas</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando citas...</p>
+  </div>
+</div>

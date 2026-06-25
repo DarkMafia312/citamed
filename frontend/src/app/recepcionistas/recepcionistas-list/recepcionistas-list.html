@@ -1,0 +1,77 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Gestión de Recepcionistas</h2>
+      <p>Administra el personal de recepción de la clínica</p>
+    </div>
+    <a routerLink="/dashboard/recepcionistas/nuevo" class="btn-primary">
+      <span>+</span> Nueva Recepcionista
+    </a>
+  </div>
+
+  <div class="search-input-wrapper">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      [(ngModel)]="busqueda"
+      placeholder="Buscar por nombre, apellido o DNI...">
+    <button class="btn-clear-inline" (click)="limpiarBusqueda()" *ngIf="busqueda">✕</button>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Recepcionista</th>
+        <th>DNI</th>
+        <th>Correo</th>
+        <th>Teléfono</th>
+        <th>Usuario</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let r of recepcionistasFiltradas">
+        <td data-label="Recepcionista">
+          <strong>{{ r.nombre }} {{ r.apellido }}</strong>
+        </td>
+        <td data-label="DNI">{{ r.dni || '-' }}</td>
+        <td data-label="Correo">{{ r.correo || '-' }}</td>
+        <td data-label="Teléfono">{{ r.telefono || '-' }}</td>
+        <td data-label="Usuario">{{ r.username || '-' }}</td>
+        <td data-label="Estado">
+            <span class="badge" [class.badge-success]="r.activo" [class.badge-danger]="!r.activo">
+              {{ r.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td data-label="Acciones">
+          <div class="actions">
+            <a *ngIf="r.activo" [routerLink]="['/dashboard/recepcionistas/editar', r.id]" class="btn-icon btn-edit" title="Editar">
+              ✏️
+            </a>
+            <span *ngIf="!r.activo" class="btn-icon btn-disabled" title="Habilita para poder editar">
+                ✏️
+              </span>
+            <button class="btn-icon" [class.btn-warning]="r.activo" [class.btn-success]="!r.activo"
+                    (click)="toggleActivo(r)" [title]="r.activo ? 'Deshabilitar' : 'Habilitar'">
+              {{ r.activo ? '🔒' : '🔓' }}
+            </button>
+            <button class="btn-icon btn-danger" (click)="eliminar(r)" title="Eliminar">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="recepcionistasFiltradas.length === 0">
+        <td colspan="7" class="no-data">No se encontraron recepcionistas</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando recepcionistas...</p>
+  </div>
+</div>

@@ -1,0 +1,350 @@
+.pacientes-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  animation: fadeInUp 0.4s ease-out;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #0f3d3e;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0.2rem 0 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    h2 { font-size: 1.5rem; }
+  }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+  color: #06302f;
+  font-weight: 700;
+  text-decoration: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+
+  span { font-size: 1.1rem; }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(20, 184, 166, 0.3);
+  }
+}
+
+.search-bar {
+  animation: fadeInUp 0.4s ease-out 0.1s both;
+}
+
+.select-medico {
+  padding: 0.65rem 1rem;
+  border: 1.5px solid #e1e5ea;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  outline: none;
+  background: #fff;
+  color: #344054;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 240px;
+
+  &:focus {
+    border-color: #1a5f5f;
+    box-shadow: 0 0 0 4px rgba(26, 95, 95, 0.08);
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+  }
+}
+
+.medico-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  animation: fadeInUp 0.4s ease-out both;
+  transition: box-shadow 0.25s ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.medico-card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #0f3d3e, #1a5f5f);
+  color: #fff;
+
+  @media (min-width: 768px) {
+    padding: 1.25rem 1.75rem;
+  }
+}
+
+.medico-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #06302f;
+  flex-shrink: 0;
+}
+
+.medico-card-info {
+  flex: 1;
+  min-width: 0;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  span {
+    font-size: 0.78rem;
+    color: #a7d3d4;
+  }
+}
+
+.medico-card-count {
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  color: #cfe5e6;
+  white-space: nowrap;
+}
+
+.horarios-chips {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.horario-chip {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid #f0f2f5;
+  transition: background 0.15s ease;
+  flex-wrap: wrap;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #f9fbfc;
+  }
+
+  &.chip-disabled {
+    opacity: 0.6;
+    background: #fafafa;
+  }
+
+  @media (min-width: 768px) {
+    padding: 0.85rem 1.75rem;
+    flex-wrap: nowrap;
+  }
+}
+
+.chip-day {
+  min-width: 110px;
+}
+
+.chip-hours {
+  flex: 1;
+  font-size: 0.85rem;
+  color: #344054;
+  font-weight: 500;
+}
+
+.chip-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.badge {
+  padding: 0.25rem 0.65rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-success {
+  background: #e7f8f0;
+  color: #0f9d58;
+}
+
+.badge-danger {
+  background: #fdedee;
+  color: #e63946;
+}
+
+.badge-day {
+  background: #e0f2fe;
+  color: #2563eb;
+}
+
+.badge-day-off {
+  background: #f0f2f5;
+  color: #9aa5b1;
+}
+
+.actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  background: #f4f6f9;
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover { transform: translateY(-2px); }
+  &.btn-edit:hover { background: #e0f2fe; }
+  &.btn-warning:hover { background: #fef3c7; }
+  &.btn-success:hover { background: #d1fae5; }
+  &.btn-danger:hover { background: #fee2e2; }
+}
+
+.btn-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.no-data-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  color: #9aa5b1;
+
+  span {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.75rem;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+  }
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+  color: #9aa5b1;
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid #e1e5ea;
+    border-top-color: #1a5f5f;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.medico-card {
+  border-left: 4px solid #14b8a6;
+  margin-bottom: 1.25rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.medico-card-header {
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 50%;
+    right: -40px;
+    top: -50px;
+  }
+}
+
+.horario-chip {
+  &:hover {
+    .chip-day .badge-day {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.badge-day {
+  transition: transform 0.2s ease;
+  display: inline-block;
+}
+
+.chip-hours {
+  font-weight: 600;
+}

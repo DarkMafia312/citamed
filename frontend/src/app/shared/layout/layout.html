@@ -1,0 +1,15 @@
+<div class="app-layout">
+  <app-sidebar [mobileOpen]="mobileMenuOpen" (closeMobile)="mobileMenuOpen = false"></app-sidebar>
+
+  <div class="sidebar-overlay" *ngIf="mobileMenuOpen" (click)="mobileMenuOpen = false"></div>
+
+  <div class="main-content">
+    <app-navbar (toggleMobileMenu)="mobileMenuOpen = !mobileMenuOpen"></app-navbar>
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <app-toast></app-toast>
+  <app-confirm-dialog></app-confirm-dialog>
+</div>

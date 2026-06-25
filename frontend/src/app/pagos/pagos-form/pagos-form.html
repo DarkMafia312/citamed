@@ -1,0 +1,81 @@
+<div class="form-page">
+  <div class="page-header">
+    <div>
+      <h2>{{ esEdicion ? 'Editar Pago' : 'Nuevo Pago' }}</h2>
+      <p>{{ esEdicion ? 'Actualiza la información del pago' : 'Registra un nuevo pago de paciente' }}</p>
+    </div>
+    <button class="btn-back" (click)="cancelar()">← Volver</button>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando datos del pago...</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card" *ngIf="!cargando">
+
+    <div class="form-section">
+      <h3>Datos del pago</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Paciente *</label>
+          <select formControlName="pacienteId" (change)="onPacienteChange()" [class.is-invalid]="campoInvalido('pacienteId')">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let p of pacientes" [value]="p.id">{{ p.nombre }} {{ p.apellido }} - {{ p.dni }}</option>
+          </select>
+          <div class="error-msg" *ngIf="campoInvalido('pacienteId')">
+            <span>El paciente es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Cita relacionada</label>
+          <select formControlName="citaId">
+            <option value="">Sin vincular a una cita</option>
+            <option *ngFor="let c of citasDelPaciente" [value]="c.id">
+              {{ c.fecha }} {{ c.hora }} - {{ c.medicoNombre }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Monto (S/) *</label>
+          <input type="number" step="0.01" min="0.01" formControlName="monto" placeholder="0.00"
+                 [class.is-invalid]="campoInvalido('monto')">
+          <div class="error-msg" *ngIf="campoInvalido('monto')">
+            <span>El monto debe ser mayor a 0</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Método de pago *</label>
+          <select formControlName="metodoPago" [class.is-invalid]="campoInvalido('metodoPago')">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let m of metodosPago" [value]="m">{{ m }}</option>
+          </select>
+          <div class="error-msg" *ngIf="campoInvalido('metodoPago')">
+            <span>El método de pago es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>N° de boleta/factura</label>
+          <input type="text" formControlName="numeroBoleta" placeholder="Ej. B001-00123">
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Concepto</label>
+          <input type="text" formControlName="concepto" placeholder="Ej. Consulta médica general">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-save" [disabled]="guardando">
+        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar cambios' : 'Registrar pago' }}</span>
+        <span *ngIf="guardando" class="spinner-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>

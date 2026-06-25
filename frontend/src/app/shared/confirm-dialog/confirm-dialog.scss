@@ -1,0 +1,156 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 61, 62, 0.5);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9998;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dialog {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.75rem;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  animation: scaleIn 0.25s ease-out;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.dialog-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+}
+
+h3 {
+  margin: 0 0 0.5rem;
+  color: #0f3d3e;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+p {
+  margin: 0 0 1.5rem;
+  color: #6c757d;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+
+  button {
+    flex: 1;
+    padding: 0.65rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+  }
+}
+
+.btn-cancel {
+  background: #f4f6f9;
+  color: #344054;
+
+  &:hover {
+    background: #e8ecf1;
+  }
+}
+
+.btn-confirm {
+  color: #fff;
+  background: #e63946;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(230, 57, 70, 0.3);
+  }
+}
+
+.dialog-warning .btn-confirm {
+  background: #f59e0b;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.3);
+  }
+}
+
+.dialog-info .btn-confirm {
+  background: #3b82f6;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3);
+  }
+}
+
+.dialog-error .btn-confirm {
+  background: #dc2626;
+
+  &:hover {
+    box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+  }
+}
+
+.dialog-error .dialog-icon {
+  filter: grayscale(0.15);
+}
+
+.dialog-input {
+  text-align: left;
+  margin-bottom: 1.25rem;
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #344054;
+    margin-bottom: 0.4rem;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 0.65rem 0.85rem;
+    border: 1.5px solid #e1e5ea;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    outline: none;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:focus {
+      border-color: #1a5f5f;
+      box-shadow: 0 0 0 4px rgba(26, 95, 95, 0.08);
+    }
+
+    &.is-invalid {
+      border-color: #e63946;
+    }
+  }
+
+  .input-error {
+    display: block;
+    font-size: 0.72rem;
+    color: #e63946;
+    margin-top: 0.3rem;
+  }
+}

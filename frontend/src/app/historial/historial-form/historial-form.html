@@ -1,0 +1,156 @@
+<div class="form-page">
+  <div class="page-header">
+    <div>
+      <h2>{{ esEdicion ? (soloLectura ? 'Ver Registro' : 'Editar Registro') : 'Nuevo Registro Médico' }}</h2>
+      <p *ngIf="!soloLectura">{{ esEdicion ? 'Actualiza la información del historial' : 'Completa los datos del historial clínico' }}</p>
+      <p *ngIf="soloLectura">Vista de solo lectura</p>
+    </div>
+    <button class="btn-back" (click)="cancelar()">← Volver</button>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando datos del registro...</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card" *ngIf="!cargando">
+
+    <div class="form-section">
+      <h3>Datos del registro</h3>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Paciente *</label>
+          <select formControlName="pacienteId" (change)="onPacienteChange()"
+                  [class.is-invalid]="campoInvalido('pacienteId')">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let p of pacientes" [value]="p.id">{{ p.nombre }} {{ p.apellido }} - {{ p.dni }}</option>
+          </select>
+          <div class="error-msg" *ngIf="campoInvalido('pacienteId')">
+            <span>El paciente es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="rol === 'MEDICO'">
+          <label>Médico</label>
+          <input type="text" [value]="miMedicoNombre" disabled>
+        </div>
+
+        <div class="form-group" *ngIf="rol !== 'MEDICO'">
+          <label>Médico *</label>
+          <select formControlName="medicoId" (change)="onMedicoChange()" [class.is-invalid]="campoInvalido('medicoId')">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let m of medicos" [value]="m.id">{{ m.nombre }} {{ m.apellido }}</option>
+          </select>
+          <div class="error-msg" *ngIf="campoInvalido('medicoId')">
+            <span>El médico es obligatorio</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Cita relacionada *</label>
+          <select formControlName="citaId" [class.is-invalid]="campoInvalido('citaId')">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let c of citasDelPaciente" [value]="c.id">
+              {{ c.fecha }} {{ c.hora }} - {{ c.medicoNombre }} ({{ c.estado }})
+            </option>
+          </select>
+          <div class="error-msg" *ngIf="campoInvalido('citaId')">
+            <span>Debe seleccionar una cita existente del paciente</span>
+          </div>
+          <div class="section-hint" *ngIf="form.get('pacienteId')?.value && citasDelPaciente.length === 0">
+            Este paciente no tiene citas registradas {{ rol === 'MEDICO' ? 'contigo' : '' }}
+          </div>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Descripción *</label>
+          <textarea formControlName="descripcion" rows="3" placeholder="Describe la consulta o evaluación realizada (mínimo 10 caracteres)"
+                    [class.is-invalid]="campoInvalido('descripcion')"></textarea>
+          <div class="error-msg" *ngIf="campoInvalido('descripcion')">
+            <span *ngIf="form.get('descripcion')?.errors?.['required']">La descripción es obligatoria</span>
+            <span *ngIf="form.get('descripcion')?.errors?.['minlength']">Mínimo 10 caracteres</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Diagnóstico y tratamiento</h3>
+      <div class="form-grid">
+        <div class="form-group form-group-full">
+          <label>Diagnóstico</label>
+          <input type="text" formControlName="diagnostico" placeholder="Ej. Faringitis aguda">
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Tratamiento</label>
+          <input type="text" formControlName="tratamiento" placeholder="Ej. Reposo y abundantes líquidos">
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Medicamentos</label>
+          <input type="text" formControlName="medicamentos" placeholder="Ej. Paracetamol 500mg cada 8h">
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Observaciones</label>
+          <textarea formControlName="observaciones" rows="2" placeholder="Notas adicionales (opcional)"></textarea>
+        </div>
+
+        <div class="form-group form-group-full calendario-wrapper">
+          <label>Próxima cita sugerida *</label>
+          <button type="button" class="date-trigger" (click)="toggleCalendario()"
+                  [class.is-invalid]="campoInvalido('proximaCita')">
+            <span *ngIf="form.get('proximaCita')?.value">{{ formatearFechaSeleccionada() }}</span>
+            <span *ngIf="!form.get('proximaCita')?.value" class="placeholder-text">Selecciona una fecha disponible</span>
+            <span class="calendar-icon">📅</span>
+          </button>
+          <div class="error-msg" *ngIf="campoInvalido('proximaCita')">
+            <span>Debes seleccionar una fecha válida para la próxima cita</span>
+          </div>
+
+          <div class="mini-calendar" *ngIf="mostrarCalendario">
+            <div class="calendar-header">
+              <button type="button" (click)="mesAnterior()">‹</button>
+              <span>{{ nombreMesActual }}</span>
+              <button type="button" (click)="mesSiguiente()">›</button>
+            </div>
+            <div class="calendar-weekdays">
+              <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
+            </div>
+            <div class="calendar-grid">
+              <span class="calendar-empty" *ngFor="let v of diasVaciosInicio"></span>
+              <button
+                type="button"
+                *ngFor="let d of diasDelMes"
+                class="calendar-day"
+                [class.disponible]="d.disponible"
+                [class.es-hoy]="d.esHoy"
+                [class.seleccionado]="form.get('proximaCita')?.value === d.fecha"
+                [disabled]="!d.disponible"
+                (click)="seleccionarDia(d)">
+                {{ d.dia }}
+              </button>
+            </div>
+            <div class="calendar-legend">
+              <span class="legend-dot disponible"></span> Día disponible del médico
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions" *ngIf="!soloLectura">
+      <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-save" [disabled]="guardando">
+        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar cambios' : 'Registrar historial' }}</span>
+        <span *ngIf="guardando" class="spinner-sm"></span>
+      </button>
+    </div>
+
+    <div class="form-actions" *ngIf="soloLectura">
+      <button type="button" class="btn-cancel" (click)="cancelar()">Volver</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,95 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Gestión de Usuarios</h2>
+      <p>Consulta y administra el acceso de las cuentas del sistema</p>
+    </div>
+  </div>
+
+  <div class="filters-card">
+    <div class="search-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        placeholder="Buscar por nombre de usuario...">
+      <button class="btn-clear-inline" (click)="busqueda = ''" *ngIf="busqueda">✕</button>
+    </div>
+
+    <div class="role-chips">
+      <button
+        class="role-chip"
+        [class.active]="filtroRol === 'TODOS'"
+        (click)="seleccionarRol('TODOS')">
+        Todos
+        <span class="chip-count">{{ contarPorRol('TODOS') }}</span>
+      </button>
+      <button
+        *ngFor="let r of roles"
+        class="role-chip"
+        [class.active]="filtroRol === r"
+        [class.chip-admin]="r === 'ADMIN' && filtroRol === r"
+        [class.chip-medico]="r === 'MEDICO' && filtroRol === r"
+        [class.chip-recep]="r === 'RECEPCIONISTA' && filtroRol === r"
+        (click)="seleccionarRol(r)">
+        {{ r }}
+        <span class="chip-count">{{ contarPorRol(r) }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let u of usuariosFiltrados; let i = index" [style.animation-delay]="(i * 0.04) + 's'">
+        <td data-label="Usuario">
+          <strong>{{ u.username }}</strong>
+          <span class="me-tag" *ngIf="esMiCuenta(u)">(Tú)</span>
+        </td>
+        <td data-label="Rol">
+            <span class="badge badge-rol"
+                  [class.badge-admin]="u.rol === 'ADMIN'"
+                  [class.badge-medico]="u.rol === 'MEDICO'"
+                  [class.badge-recep]="u.rol === 'RECEPCIONISTA'">
+              {{ u.rol }}
+            </span>
+        </td>
+        <td data-label="Estado">
+            <span class="badge" [class.badge-success]="u.activo" [class.badge-danger]="!u.activo">
+              {{ u.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td data-label="Acciones">
+          <div class="actions">
+            <button class="btn-icon"
+                    [class.btn-warning]="u.activo"
+                    [class.btn-success]="!u.activo"
+                    [class.btn-disabled]="esMiCuenta(u)"
+                    [disabled]="esMiCuenta(u)"
+                    (click)="toggleActivo(u)"
+                    [title]="esMiCuenta(u) ? 'No puedes deshabilitar tu propia cuenta' : (u.activo ? 'Deshabilitar' : 'Habilitar')">
+              {{ u.activo ? '🔒' : '🔓' }}
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="usuariosFiltrados.length === 0">
+        <td colspan="4" class="no-data">No se encontraron usuarios</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando usuarios...</p>
+  </div>
+</div>

@@ -1,0 +1,183 @@
+<div class="dashboard-home">
+
+  <div class="welcome-banner">
+    <div class="banner-text">
+      <span class="greeting">{{ getSaludo() }}</span>
+      <h2>{{ username }}</h2>
+      <p>{{ getFechaHoy() }} · Rol: {{ rol }}</p>
+    </div>
+    <div class="banner-icon">🏥</div>
+  </div>
+
+  <ng-container *ngIf="rol === 'ADMIN'">
+    <p class="page-description">
+      Desde aquí puedes visualizar las estadísticas generales de la clínica y acceder rápidamente
+      a los módulos de gestión clínica y administración.
+    </p>
+
+    <div class="stats-grid" *ngIf="!cargando">
+      <div class="stat-card"
+           *ngFor="let card of statCards; let i = index"
+           [style.animation-delay]="(i * 0.08) + 's'"
+           (click)="irA(card.route)">
+        <div class="stat-icon" [style.background]="card.color">{{ card.icon }}</div>
+        <div class="stat-info">
+          <span class="stat-value">{{ card.value }}</span>
+          <span class="stat-label">{{ card.label }}</span>
+          <span class="stat-desc">{{ card.desc }}</span>
+        </div>
+        <div class="stat-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="stats-grid stats-skeleton" *ngIf="cargando">
+      <div class="stat-card-skeleton" *ngFor="let i of [1,2,3,4]"></div>
+    </div>
+
+    <div class="quick-access">
+      <h3>Accesos rápidos</h3>
+      <p class="section-desc">Atajos a las acciones más utilizadas dentro del sistema</p>
+      <div class="quick-grid">
+        <a *ngFor="let item of accesosRapidos" [routerLink]="item.route" class="quick-item">
+          <span class="quick-icon">{{ item.icon }}</span>
+          <span class="quick-label">{{ item.label }}</span>
+          <span class="quick-desc">{{ item.desc }}</span>
+        </a>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="rol === 'MEDICO'">
+
+    <div class="loading" *ngIf="cargandoMedico">
+      <div class="spinner"></div>
+      <p>Cargando tu información...</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoMedico">
+
+      <div class="stats-grid">
+        <div class="stat-card" (click)="irA('/dashboard/citas')" style="animation-delay: 0s">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #60a5fa, #3b82f6)">📅</div>
+          <div class="stat-info">
+            <span class="stat-value">{{ citasHoy.length }}</span>
+            <span class="stat-label">Citas de Hoy</span>
+            <span class="stat-desc">Citas asignadas para hoy</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+
+        <div class="stat-card" (click)="irA('/dashboard/citas')" style="animation-delay: 0.08s">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b)">🔔</div>
+          <div class="stat-info">
+            <span class="stat-value">{{ citasPendientes.length }}</span>
+            <span class="stat-label">Citas Pendientes</span>
+            <span class="stat-desc">Programadas y confirmadas</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+
+        <div class="stat-card" (click)="irA('/dashboard/pacientes')" style="animation-delay: 0.16s">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #34d399, #10b981)">👥</div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalPacientes }}</span>
+            <span class="stat-label">Mis Pacientes</span>
+            <span class="stat-desc">Pacientes con citas contigo</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+
+        <div class="stat-card" (click)="irA('/dashboard/historial')" style="animation-delay: 0.24s">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #c084fc, #a855f7)">📋</div>
+          <div class="stat-info">
+            <span class="stat-value">{{ miEspecialidad || '-' }}</span>
+            <span class="stat-label">Mi Especialidad</span>
+            <span class="stat-desc">Ver historial de pacientes</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="quick-access">
+        <h3>Accesos rápidos</h3>
+        <p class="section-desc">Atajos a tus módulos principales</p>
+        <div class="quick-grid">
+          <a *ngFor="let item of accesosRapidosMedico" [routerLink]="item.route" class="quick-item">
+            <span class="quick-icon">{{ item.icon }}</span>
+            <span class="quick-label">{{ item.label }}</span>
+            <span class="quick-desc">{{ item.desc }}</span>
+          </a>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <ng-container *ngIf="rol === 'RECEPCIONISTA'">
+
+    <div class="loading" *ngIf="cargandoRecepcionista">
+      <div class="spinner"></div>
+      <p>Cargando información del día...</p>
+    </div>
+
+    <ng-container *ngIf="!cargandoRecepcionista">
+
+      <div class="stats-grid">
+        <div class="stat-card" (click)="irA('/dashboard/citas')" style="animation-delay: 0s">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #60a5fa, #3b82f6)">📅</div>
+          <div class="stat-info">
+            <span class="stat-value">{{ citasHoyTotal.length }}</span>
+            <span class="stat-label">Citas de Hoy</span>
+            <span class="stat-desc">Citas programadas para hoy</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+
+        <div class="stat-card" (click)="irA('/dashboard/pagos')" style="animation-delay: 0.08s">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #fbbf24, #f59e0b)">💵</div>
+          <div class="stat-info">
+            <span class="stat-value">{{ pagosPendientes.length }}</span>
+            <span class="stat-label">Pagos Pendientes</span>
+            <span class="stat-desc">Por confirmar</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+
+        <div class="stat-card" (click)="irA('/dashboard/pagos')" style="animation-delay: 0.16s">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #34d399, #10b981)">💰</div>
+          <div class="stat-info">
+            <span class="stat-value">S/ {{ totalRecaudadoHoy.toFixed(2) }}</span>
+            <span class="stat-label">Recaudado Hoy</span>
+            <span class="stat-desc">Pagos confirmados del día</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+
+        <div class="stat-card" (click)="irA('/dashboard/pacientes')" style="animation-delay: 0.24s">
+          <div class="stat-icon" style="background: linear-gradient(135deg, #c084fc, #a855f7)">👥</div>
+          <div class="stat-info">
+            <span class="stat-value">{{ totalPacientesActivos }}</span>
+            <span class="stat-label">Pacientes</span>
+            <span class="stat-desc">Total registrados activos</span>
+          </div>
+          <div class="stat-arrow">→</div>
+        </div>
+      </div>
+
+      <div class="quick-access">
+        <h3>Accesos rápidos</h3>
+        <p class="section-desc">Atajos a tus módulos principales</p>
+        <div class="quick-grid">
+          <a *ngFor="let item of accesosRapidosRecepcionista" [routerLink]="item.route" class="quick-item">
+            <span class="quick-icon">{{ item.icon }}</span>
+            <span class="quick-label">{{ item.label }}</span>
+            <span class="quick-desc">{{ item.desc }}</span>
+          </a>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <footer class="dashboard-footer">
+    <p>&copy; 2026 CitaMed · Todos los derechos reservados</p>
+  </footer>
+</div>

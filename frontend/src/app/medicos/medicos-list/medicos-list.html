@@ -1,0 +1,81 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Gestión de Médicos</h2>
+      <p>Administra el registro de médicos de la clínica</p>
+    </div>
+    <a routerLink="/dashboard/medicos/nuevo" class="btn-primary" *ngIf="puedeGestionar()">
+      <span>+</span> Nuevo Médico
+    </a>
+  </div>
+
+  <div class="search-input-wrapper">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      [(ngModel)]="busqueda"
+      (ngModelChange)="onBusquedaChange()"
+      placeholder="Buscar por nombre, apellido o CMP...">
+    <button class="btn-clear-inline" (click)="limpiarBusqueda()" *ngIf="busqueda">✕</button>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Médico</th>
+        <th>CMP</th>
+        <th>Especialidad</th>
+        <th>Correo</th>
+        <th>Teléfono</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let m of medicos">
+        <td data-label="Médico">
+          <div class="paciente-info">
+            <strong>{{ m.nombre }} {{ m.apellido }}</strong>
+            <small>{{ m.genero || '-' }}</small>
+          </div>
+        </td>
+        <td data-label="CMP">{{ m.cmp }}</td>
+        <td data-label="Especialidad">{{ m.especialidadNombre || '-' }}</td>
+        <td data-label="Correo">{{ m.correo || '-' }}</td>
+        <td data-label="Teléfono">{{ m.telefono || '-' }}</td>
+        <td data-label="Estado">
+            <span class="badge" [class.badge-success]="m.activo" [class.badge-danger]="!m.activo">
+              {{ m.activo ? 'Activo' : 'Inactivo' }}
+            </span>
+        </td>
+        <td data-label="Acciones">
+          <div class="actions" *ngIf="puedeGestionar()">
+            <a *ngIf="m.activo" [routerLink]="['/dashboard/medicos/editar', m.id]" class="btn-icon btn-edit" title="Editar">
+              ✏️
+            </a>
+            <span *ngIf="!m.activo" class="btn-icon btn-disabled" title="Habilita al médico para poder editarlo">
+                ✏️
+              </span>
+            <button class="btn-icon" [class.btn-warning]="m.activo" [class.btn-success]="!m.activo"
+                    (click)="toggleActivo(m)" [title]="m.activo ? 'Deshabilitar' : 'Habilitar'">
+              {{ m.activo ? '🔒' : '🔓' }}
+            </button>
+            <button class="btn-icon btn-danger" (click)="eliminar(m)" title="Eliminar">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="medicos.length === 0">
+        <td colspan="7" class="no-data">No se encontraron médicos</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando médicos...</p>
+  </div>
+</div>

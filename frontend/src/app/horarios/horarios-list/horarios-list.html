@@ -1,0 +1,79 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Horarios de Médicos</h2>
+      <p *ngIf="rol !== 'MEDICO'">Gestiona los turnos semanales del personal médico</p>
+      <p *ngIf="rol === 'MEDICO'">Consulta y administra tu horario semanal</p>
+    </div>
+    <a routerLink="/dashboard/horarios/nuevo" class="btn-primary" *ngIf="puedeCrear()">
+      <span>+</span> Nuevo Horario
+    </a>
+  </div>
+
+  <div class="search-bar" *ngIf="rol !== 'MEDICO'">
+    <select [(ngModel)]="filtroMedicoId" class="select-medico">
+      <option value="todos">Todos los médicos</option>
+      <option *ngFor="let m of medicos" [value]="m.id">
+        {{ m.nombre }} {{ m.apellido }}
+      </option>
+    </select>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando horarios...</p>
+  </div>
+
+  <div *ngIf="!cargando">
+    <div *ngIf="gruposFiltrados.length === 0" class="no-data-card">
+      <span>📭</span>
+      <p>No se encontraron horarios registrados</p>
+    </div>
+
+    <div class="medico-card" *ngFor="let grupo of gruposFiltrados">
+      <div class="medico-card-header">
+        <div class="medico-avatar">{{ grupo.medicoNombre.charAt(0) }}</div>
+        <div class="medico-card-info">
+          <h3>{{ grupo.medicoNombre }}</h3>
+          <span>{{ grupo.medicoEspecialidad }}</span>
+        </div>
+        <div class="medico-card-count">
+          {{ grupo.horarios.length }} día(s) registrado(s)
+        </div>
+      </div>
+
+      <div class="horarios-chips">
+        <div class="horario-chip" *ngFor="let h of grupo.horarios"
+             [class.chip-disabled]="!h.disponible">
+          <div class="chip-day">
+            <span class="badge badge-day" [class.badge-day-off]="!h.disponible">
+              {{ h.diaSemana }}
+            </span>
+          </div>
+          <div class="chip-hours">
+            🕐 {{ formatearHora(h.horaInicio) }} — {{ formatearHora(h.horaFin) }}
+          </div>
+          <div class="chip-actions" *ngIf="puedeEditar(h)">
+            <a *ngIf="h.disponible"
+               [routerLink]="['/dashboard/horarios/editar', h.id]"
+               class="btn-icon btn-edit" title="Editar">✏️</a>
+            <span *ngIf="!h.disponible"
+                  class="btn-icon btn-disabled" title="Habilita el horario para poder editarlo">✏️</span>
+            <button class="btn-icon"
+                    [class.btn-warning]="h.disponible"
+                    [class.btn-success]="!h.disponible"
+                    (click)="toggleDisponible(h)"
+                    [title]="h.disponible ? 'Deshabilitar' : 'Habilitar'"
+                    *ngIf="rol === 'ADMIN'">
+              {{ h.disponible ? '🔒' : '🔓' }}
+            </button>
+            <button class="btn-icon btn-danger"
+                    (click)="eliminar(h)"
+                    title="Eliminar"
+                    *ngIf="rol === 'ADMIN'">🗑️</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

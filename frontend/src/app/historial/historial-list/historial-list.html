@@ -1,0 +1,72 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Historial Médico</h2>
+      <p *ngIf="rol !== 'RECEPCIONISTA'">Consulta y registra el historial clínico de los pacientes</p>
+      <p *ngIf="rol === 'RECEPCIONISTA'">Consulta el historial clínico de los pacientes</p>
+    </div>
+    <a routerLink="/dashboard/historial/nuevo" class="btn-primary" *ngIf="puedeCrear()">
+      <span>+</span> Nuevo Registro
+    </a>
+  </div>
+
+  <div class="search-input-wrapper">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      [(ngModel)]="busqueda"
+      placeholder="Buscar por paciente, médico o diagnóstico...">
+    <button class="btn-clear-inline" (click)="limpiarBusqueda()" *ngIf="busqueda">✕</button>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Paciente</th>
+        <th>Médico</th>
+        <th>Fecha</th>
+        <th>Diagnóstico</th>
+        <th>Tratamiento</th>
+        <th>Próxima Cita</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let h of historialesFiltrados">
+        <td data-label="Paciente"><strong>{{ h.pacienteNombre }}</strong></td>
+        <td data-label="Médico">{{ h.medicoNombre }}</td>
+        <td data-label="Fecha">{{ h.fecha }}</td>
+        <td data-label="Diagnóstico">{{ h.diagnostico || '-' }}</td>
+        <td data-label="Tratamiento">{{ h.tratamiento || '-' }}</td>
+        <td data-label="Próxima Cita">
+          <span class="badge badge-info" *ngIf="h.proximaCita">{{ h.proximaCita }}</span>
+          <span *ngIf="!h.proximaCita">-</span>
+        </td>
+        <td data-label="Acciones">
+          <div class="actions">
+            <a [routerLink]="['/dashboard/historial/editar', h.id]" class="btn-icon btn-edit" title="Ver / Editar"
+               *ngIf="puedeEditar(h)">
+              ✏️
+            </a>
+            <span class="btn-icon btn-disabled" title="Solo lectura" *ngIf="!puedeEditar(h) && rol !== 'RECEPCIONISTA'">
+                🔒
+              </span>
+            <button class="btn-icon btn-danger" (click)="eliminar(h)" title="Eliminar" *ngIf="puedeEliminar()">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="historialesFiltrados.length === 0">
+        <td colspan="7" class="no-data">No se encontraron registros</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando historial médico...</p>
+  </div>
+</div>

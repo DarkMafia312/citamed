@@ -1,0 +1,28 @@
+<div class="overlay" *ngIf="confirmService.config()" (click)="confirmService.respond(false)">
+  <div class="dialog" [class]="'dialog-' + (confirmService.config()?.type || 'danger')" (click)="$event.stopPropagation()">
+    <div class="dialog-icon">{{ getIcon() }}</div>
+    <h3>{{ confirmService.config()?.title }}</h3>
+    <p>{{ confirmService.config()?.message }}</p>
+
+    <div class="dialog-input" *ngIf="confirmService.config()?.requireInput">
+      <label>{{ confirmService.config()?.inputLabel || 'Motivo' }}</label>
+      <textarea
+        [ngModel]="confirmService.inputValue()"
+        (ngModelChange)="confirmService.inputValue.set($event)"
+        [placeholder]="confirmService.config()?.inputPlaceholder || 'Escribe aquí...'"
+        rows="3"
+        [class.is-invalid]="inputInvalido"
+        autofocus></textarea>
+      <span class="input-error" *ngIf="inputInvalido">Este campo es obligatorio</span>
+    </div>
+
+    <div class="dialog-actions">
+      <button class="btn-cancel" (click)="confirmService.respond(false)">
+        {{ confirmService.config()?.cancelText || 'Cancelar' }}
+      </button>
+      <button class="btn-confirm" (click)="onConfirm()">
+        {{ confirmService.config()?.confirmText || 'Confirmar' }}
+      </button>
+    </div>
+  </div>
+</div>

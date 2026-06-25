@@ -1,0 +1,71 @@
+<div class="form-page">
+  <div class="page-header">
+    <div>
+      <h2>{{ esEdicion ? 'Editar Consultorio' : 'Nuevo Consultorio' }}</h2>
+      <p>{{ esEdicion ? 'Actualiza la información del consultorio' : 'Completa los datos para registrar un nuevo consultorio' }}</p>
+    </div>
+    <button class="btn-back" (click)="cancelar()">← Volver</button>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando datos del consultorio...</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card" *ngIf="!cargando">
+
+    <div class="form-section">
+      <h3>Datos del consultorio</h3>
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Código *</label>
+          <input type="text" formControlName="codigo" placeholder="Ej. C-101" maxlength="5"
+                 (input)="codigoInput($event)"
+                 [class.is-invalid]="campoInvalido('codigo')">
+          <div class="error-msg" *ngIf="campoInvalido('codigo')">
+            <span *ngIf="form.get('codigo')?.errors?.['required']">El código es obligatorio</span>
+            <span *ngIf="form.get('codigo')?.errors?.['pattern']">El código debe tener el formato C-101</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" formControlName="nombre" placeholder="Ej. Consultorio de Medicina General N°1"
+                 [class.is-invalid]="campoInvalido('nombre')">
+          <div class="error-msg" *ngIf="campoInvalido('nombre')">
+            <span *ngIf="form.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+            <span *ngIf="form.get('nombre')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo</label>
+          <select formControlName="tipo">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let t of tipos" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Piso</label>
+          <input type="text" formControlName="piso" placeholder="Ej. 2do piso"
+                 (input)="pisoInput($event)">
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Descripción</label>
+          <textarea formControlName="descripcion" rows="3" placeholder="Detalles adicionales del consultorio (opcional)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-save" [disabled]="guardando">
+        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar cambios' : 'Registrar consultorio' }}</span>
+        <span *ngIf="guardando" class="spinner-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>

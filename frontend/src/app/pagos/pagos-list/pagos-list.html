@@ -1,0 +1,105 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Gestión de Pagos</h2>
+      <p>Administra los pagos realizados por los pacientes</p>
+    </div>
+    <a routerLink="/dashboard/pagos/nuevo" class="btn-primary">
+      <span>+</span> Nuevo Pago
+    </a>
+  </div>
+
+  <div class="resumen-card" *ngIf="!cargando">
+    <div class="resumen-item">
+      <span class="resumen-label">Total recaudado</span>
+      <span class="resumen-valor">S/ {{ totalPagado.toFixed(2) }}</span>
+    </div>
+  </div>
+
+  <div class="filters-card">
+    <div class="search-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        placeholder="Buscar por paciente, concepto o N° boleta...">
+      <button class="btn-clear-inline" (click)="limpiarFiltros()" *ngIf="busqueda">✕</button>
+    </div>
+
+    <div class="role-chips">
+      <button class="role-chip" [class.active]="filtroEstado === 'TODOS'" (click)="filtroEstado = 'TODOS'">
+        Todos
+        <span class="chip-count">{{ contarPorEstado('TODOS') }}</span>
+      </button>
+      <button
+        *ngFor="let e of estados"
+        class="role-chip"
+        [class.active]="filtroEstado === e"
+        [class.chip-pendiente]="e === 'PENDIENTE' && filtroEstado === e"
+        [class.chip-pagado]="e === 'PAGADO' && filtroEstado === e"
+        [class.chip-anulado]="e === 'ANULADO' && filtroEstado === e"
+        (click)="filtroEstado = e">
+        {{ e }}
+        <span class="chip-count">{{ contarPorEstado(e) }}</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Paciente</th>
+        <th>Concepto</th>
+        <th>Monto</th>
+        <th>Método</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let p of pagosFiltrados">
+        <td data-label="Paciente"><strong>{{ p.pacienteNombre }}</strong></td>
+        <td data-label="Concepto">{{ p.concepto || '-' }}</td>
+        <td data-label="Monto">S/ {{ p.monto.toFixed(2) }}</td>
+        <td data-label="Método">{{ p.metodoPago || '-' }}</td>
+        <td data-label="Fecha">{{ p.fecha }}</td>
+        <td data-label="Estado">
+            <span class="badge"
+                  [class.badge-info]="p.estado === 'PENDIENTE'"
+                  [class.badge-success]="p.estado === 'PAGADO'"
+                  [class.badge-danger]="p.estado === 'ANULADO'">
+              {{ p.estado }}
+            </span>
+        </td>
+        <td data-label="Acciones">
+          <div class="actions" *ngIf="tieneAcciones(p)">
+            <a *ngIf="puedeEditar(p)" [routerLink]="['/dashboard/pagos/editar', p.id]" class="btn-icon btn-edit" title="Editar">
+              ✏️
+            </a>
+            <button *ngIf="puedeConfirmar(p)" class="btn-icon btn-success" (click)="confirmarPago(p)" title="Confirmar pago">
+              ✅
+            </button>
+            <button *ngIf="puedeAnular() && p.estado !== 'ANULADO'" class="btn-icon btn-warning" (click)="anularPago(p)" title="Anular pago">
+              🚫
+            </button>
+            <button *ngIf="puedeEliminar()" class="btn-icon btn-danger" (click)="eliminar(p)" title="Eliminar">
+              🗑️
+            </button>
+          </div>
+          <span *ngIf="!tieneAcciones(p)" class="no-actions">—</span>
+        </td>
+      </tr>
+      <tr *ngIf="pagosFiltrados.length === 0">
+        <td colspan="7" class="no-data">No se encontraron pagos</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando pagos...</p>
+  </div>
+</div>

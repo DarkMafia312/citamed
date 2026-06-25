@@ -1,0 +1,166 @@
+<div class="form-page">
+  <div class="page-header">
+    <div>
+      <h2>{{ esEdicion ? 'Editar Paciente' : 'Nuevo Paciente' }}</h2>
+      <p>{{ esEdicion ? 'Actualiza la información del paciente' : 'Completa los datos para registrar un nuevo paciente' }}</p>
+    </div>
+    <button class="btn-back" (click)="cancelar()">← Volver</button>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando datos del paciente...</p>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form-card" *ngIf="!cargando">
+
+    <div class="form-section">
+      <h3>Datos personales</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nombre *</label>
+          <input type="text" formControlName="nombre" placeholder="Ej. María Elena"
+                 (input)="soloLetras($event, 'nombre')"
+                 [class.is-invalid]="campoInvalido('nombre')">
+          <div class="error-msg" *ngIf="campoInvalido('nombre')">
+            <span *ngIf="form.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+            <span *ngIf="form.get('nombre')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Apellido *</label>
+          <input type="text" formControlName="apellido" placeholder="Ej. Soto Vargas"
+                 (input)="soloLetras($event, 'apellido')"
+                 [class.is-invalid]="campoInvalido('apellido')">
+          <div class="error-msg" *ngIf="campoInvalido('apellido')">
+            <span *ngIf="form.get('apellido')?.errors?.['required']">El apellido es obligatorio</span>
+            <span *ngIf="form.get('apellido')?.errors?.['minlength']">Mínimo 2 caracteres</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>DNI *</label>
+          <input type="text" formControlName="dni" placeholder="8 dígitos" maxlength="8"
+                 inputmode="numeric"
+                 (input)="soloNumeros($event, 'dni', 8)"
+                 [class.is-invalid]="campoInvalido('dni')">
+          <div class="error-msg" *ngIf="campoInvalido('dni')">
+            <span *ngIf="form.get('dni')?.errors?.['required']">El DNI es obligatorio</span>
+            <span *ngIf="form.get('dni')?.errors?.['pattern']">El DNI debe tener exactamente 8 dígitos</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Fecha de nacimiento *</label>
+          <div class="fecha-selector" [class.is-invalid]="campoInvalido('fechaNacimiento')">
+            <select [(ngModel)]="diaNacimiento" [ngModelOptions]="{standalone: true}"
+                    (change)="onFechaCambio()" class="fecha-select">
+              <option value="">Día</option>
+              <option *ngFor="let d of diasDelMes" [value]="d">{{ d }}</option>
+            </select>
+            <select [(ngModel)]="mesNacimiento" [ngModelOptions]="{standalone: true}"
+                    (change)="onFechaCambio()" class="fecha-select">
+              <option value="">Mes</option>
+              <option *ngFor="let m of meses" [value]="m.valor">{{ m.nombre }}</option>
+            </select>
+            <select [(ngModel)]="anioNacimiento" [ngModelOptions]="{standalone: true}"
+                    (change)="onFechaCambio()" class="fecha-select">
+              <option value="">Año</option>
+              <option *ngFor="let a of aniosDisponibles" [value]="a">{{ a }}</option>
+            </select>
+          </div>
+          <div class="error-msg" *ngIf="campoInvalido('fechaNacimiento')">
+            <span>La fecha de nacimiento es obligatoria</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Género *</label>
+          <select formControlName="genero" [class.is-invalid]="campoInvalido('genero')">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
+          </select>
+          <div class="error-msg" *ngIf="campoInvalido('genero')">
+            <span>El género es obligatorio</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Contacto</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" formControlName="telefono" placeholder="9 dígitos" maxlength="9"
+                 inputmode="numeric"
+                 (input)="soloNumeros($event, 'telefono', 9)"
+                 [class.is-invalid]="campoInvalido('telefono')">
+          <div class="error-msg" *ngIf="campoInvalido('telefono')">
+            <span>El teléfono debe tener exactamente 9 dígitos</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Correo</label>
+          <input type="text" formControlName="correo" placeholder="ejemplo@gmail.com"
+                 [class.is-invalid]="campoInvalido('correo')">
+          <div class="error-msg" *ngIf="campoInvalido('correo')">
+            <span>Solo se permiten correos @gmail.com</span>
+          </div>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Dirección</label>
+          <input type="text" formControlName="direccion" placeholder="Av. Ejemplo 123 #45"
+                 (input)="direccionInput($event)"
+                 [class.is-invalid]="campoInvalido('direccion')">
+          <div class="error-msg" *ngIf="campoInvalido('direccion')">
+            <span>Solo letras, números, espacios y los símbolos # . , -</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3>Información médica</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tipo de sangre</label>
+          <select formControlName="tipoSangre">
+            <option value="">Seleccione...</option>
+            <option *ngFor="let t of tiposSangre" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Seguro médico</label>
+          <input type="text" formControlName="seguroMedico" placeholder="Ej. EsSalud, SIS, Particular"
+                 (input)="soloLetras($event, 'seguroMedico')"
+                 [class.is-invalid]="campoInvalido('seguroMedico')">
+          <div class="error-msg" *ngIf="campoInvalido('seguroMedico')">
+            <span>Solo se permiten letras</span>
+          </div>
+        </div>
+
+        <div class="form-group form-group-full">
+          <label>Alergias</label>
+          <textarea formControlName="alergias" rows="3" placeholder="Ej. Ninguna conocida"
+                    [class.is-invalid]="campoInvalido('alergias')"></textarea>
+          <div class="error-msg" *ngIf="campoInvalido('alergias')">
+            <span>Máximo 255 caracteres</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancel" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-save" [disabled]="guardando">
+        <span *ngIf="!guardando">{{ esEdicion ? 'Guardar cambios' : 'Registrar paciente' }}</span>
+        <span *ngIf="guardando" class="spinner-sm"></span>
+      </button>
+    </div>
+  </form>
+</div>

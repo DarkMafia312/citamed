@@ -1,0 +1,70 @@
+<aside class="sidebar" [class.collapsed]="collapsed" [class.mobile-open]="mobileOpen">
+  <div class="sidebar-header">
+    <div class="logo" *ngIf="!collapsed">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L4 6V12C4 16.5 7.5 20.5 12 22C16.5 20.5 20 16.5 20 12V6L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M12 8V16M8 12H16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <div>
+        <strong>CitaMed</strong>
+        <small>PANEL {{ rol }}</small>
+      </div>
+    </div>
+    <button class="toggle-btn desktop-only" (click)="toggleSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="toggle-btn mobile-only" (click)="onLinkClick()">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 6L18 18M6 18L18 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <span class="nav-title" *ngIf="!collapsed">Principal</span>
+      <a *ngFor="let item of menuPrincipal"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         [routerLinkActiveOptions]="{exact: true}"
+         (click)="onLinkClick()"
+         class="nav-link"
+         [title]="item.label">
+        <span class="nav-icon">{{ getIcon(item.icon) }}</span>
+        <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+      </a>
+    </div>
+
+    <div class="nav-section">
+      <span class="nav-title" *ngIf="!collapsed">Gestión Clínica</span>
+      <ng-container *ngFor="let item of menuClinica">
+        <a *ngIf="visible(item)"
+           [routerLink]="item.route"
+           routerLinkActive="active"
+           (click)="onLinkClick()"
+           class="nav-link"
+           [title]="item.label">
+          <span class="nav-icon">{{ getIcon(item.icon) }}</span>
+          <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+        </a>
+      </ng-container>
+    </div>
+
+    <div class="nav-section" *ngIf="rol === 'ADMIN' || rol === 'MEDICO' || rol === 'RECEPCIONISTA'">
+      <span class="nav-title" *ngIf="!collapsed">{{ rol === 'ADMIN' ? 'Administración' : 'Mi Cuenta' }}</span>
+      <ng-container *ngFor="let item of menuAdmin">
+        <a *ngIf="visible(item)"
+           [routerLink]="item.route"
+           routerLinkActive="active"
+           (click)="onLinkClick()"
+           class="nav-link"
+           [title]="item.label">
+          <span class="nav-icon">{{ getIcon(item.icon) }}</span>
+          <span class="nav-label" *ngIf="!collapsed">{{ item.label }}</span>
+        </a>
+      </ng-container>
+    </div>
+  </nav>
+</aside>

@@ -1,0 +1,58 @@
+<div class="pacientes-page">
+  <div class="page-header">
+    <div>
+      <h2>Gestión de Especialidades</h2>
+      <p>Administra las especialidades médicas disponibles en la clínica</p>
+    </div>
+    <a routerLink="/dashboard/especialidades/nuevo" class="btn-primary" *ngIf="puedeGestionar()">
+      <span>+</span> Nueva Especialidad
+    </a>
+  </div>
+
+  <div class="search-input-wrapper">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      [(ngModel)]="busqueda"
+      placeholder="Buscar por nombre o descripción...">
+    <button class="btn-clear-inline" (click)="limpiarBusqueda()" *ngIf="busqueda">✕</button>
+  </div>
+
+  <div class="table-wrapper" *ngIf="!cargando">
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Especialidad</th>
+        <th>Descripción</th>
+        <th *ngIf="puedeGestionar()">Acciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let e of especialidadesFiltradas">
+        <td data-label="Especialidad">
+          <strong>{{ e.nombre }}</strong>
+        </td>
+        <td data-label="Descripción">{{ e.descripcion || '-' }}</td>
+        <td data-label="Acciones" *ngIf="puedeGestionar()">
+          <div class="actions">
+            <a [routerLink]="['/dashboard/especialidades/editar', e.id]" class="btn-icon btn-edit" title="Editar">
+              ✏️
+            </a>
+            <button class="btn-icon btn-danger" (click)="eliminar(e)" title="Eliminar">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="especialidadesFiltradas.length === 0">
+        <td [attr.colspan]="puedeGestionar() ? 3 : 2" class="no-data">No se encontraron especialidades</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="loading" *ngIf="cargando">
+    <div class="spinner"></div>
+    <p>Cargando especialidades...</p>
+  </div>
+</div>
